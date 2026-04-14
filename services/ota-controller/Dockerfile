@@ -13,6 +13,6 @@ FROM gcr.io/distroless/nodejs20-debian11
 WORKDIR /app
 COPY --from=builder /app .
 
-EXPOSE 9000
+EXPOSE 7070
 
 CMD ["server.js"]
