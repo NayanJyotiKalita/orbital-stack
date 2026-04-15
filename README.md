@@ -199,16 +199,72 @@ docker run -d -p 1883:1883 --name mqqt-cont eclipse-mosquitto:2
 
 # Running Docker Compose 
 
+So we have tested running all the containers locally to check if everything run properly and glad that we did as we debugged a lot which we can now apply at a proper production level. 
 
+So now we use docker compose to simulate a mini production system locally.
 
+We have configured all the four services in [docker-compose.yaml](docker-compose.yaml) file and run it:
 
+```
+cd orbital-stack
 
+docker compose up --build
+```
 
+And voila, we have all the four images and the four respective containers running on it:
 
+<img width="1478" height="927" alt="Screenshot 2026-04-14 162316" src="https://github.com/user-attachments/assets/a11fb257-c114-4a25-9ecf-990a32c7d2fd" />
 
+<img width="1919" height="352" alt="Screenshot 2026-04-14 162256" src="https://github.com/user-attachments/assets/7a5bae2f-872e-44b2-992a-7b9512c94c14" />
 
+---
 
+# KIND Cluster Creation
 
+We created the cluster config here [cluster.yaml](kind/cluster.yaml) with one control-plane and three worker nodes
+
+```
+kind create cluster --config cluster.yaml
+```
+
+<img width="1107" height="501" alt="Screenshot 2026-04-15 182009" src="https://github.com/user-attachments/assets/52400ea2-77b9-4fd3-9069-ecf2d5bf93cf" />
+
+We can see the nodes using docker ps:
+
+<img width="1617" height="158" alt="Screenshot 2026-04-15 182151" src="https://github.com/user-attachments/assets/aafc0006-ffb1-43ce-b2d3-62ffb9123ca8" />
+
+But we need to use the kubernetes command line tool which is kubectl so we installed kubectl
+
+<img width="1590" height="871" alt="Screenshot 2026-04-15 182400" src="https://github.com/user-attachments/assets/e115f592-1d0f-4a59-90c1-9a1602b71eab" />
+
+---
+---
+---
+
+# Bootstrapping the Cluster
+
+Installing 
+
+  - Ingress-nginx  --> to handle external traffic
+  - ArgoCD         --> GitOps Deployment
+  - Cert-Manger    --> TLS certificates
+
+Wrote the [bootstrap script](scripts/bootstrap.sh) for installing the above components.
+
+All the components are installed successfully
+***Bonus***: Configured my `bashrc` file for some efficiency:
+
+<img width="413" height="123" alt="Screenshot 2026-04-15 225817" src="https://github.com/user-attachments/assets/321afa1f-fe66-435d-9a7b-4399d623dd4e" />
+
+<img width="779" height="586" alt="Screenshot 2026-04-15 231006" src="https://github.com/user-attachments/assets/3c1e7792-b873-412f-8a8a-f860c1ab6df1" />
+
+---
+
+---
+
+---
+
+# Creation of Helm Charts
 
 
 
