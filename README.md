@@ -266,6 +266,72 @@ All the components are installed successfully
 
 # Creation of Helm Charts
 
+Our objective here is to deploy the device-api service to a local K8s cluster using helm, ensuring:
+  - Proper container image usage
+  - K8s compatibility
+  - Readiness & liveness validation
+
+In our helm charts e.g. in the [device-api](helm/charts/device-api/values.yaml), we first mentioned the image to be device-api and tag as v1. But when it tried to pull the image through the [deployment](helm/charts/device-api/templates/deployment.yaml), it tries to pull it from Docker Hub - not from our local images. So it fails to pull the images and the Status of pods is ImagePullBackOff
+
+<img width="722" height="81" alt="Screenshot 2026-04-16 233832" src="https://github.com/user-attachments/assets/e337b25b-0841-4da9-baad-303256a064ee" />
+
+We decided to load our docker image into kind:
+
+```
+# Build the image
+docker build -t orbital-stack-device-api:v1 services/device-api
+
+#Copying the image into kind-control plane and worker nodes
+kind load docker-image orbital-stack-device-api:v1
+```
+
+Fix the values.yaml file:
+
+```
+image:
+    repository: orbital-stack-device-api
+    tag: v1
+    pullPolicy: IfNotPresent   # don’t try pulling from internet
+```
+
+And add this into templates/deployment.yaml:
+
+```
+imagePullPolicy: {{ .Values.image.pullPolicy }}
+```
+
+Now we run our `helm upgrade command`:
+```
+helm upgrade --install device-api helm/charts/device-api
+```
+
+Finally I can see our pods running:
+
+<img width="613" height="81" alt="Screenshot 2026-04-16 224727" src="https://github.com/user-attachments/assets/22ecf8bf-deed-4a26-a160-9050f79df6f9" />
+
+And tested the service:
+
+```
+kubectl port-forward svc/device-api 9000:9000
+
+curl http://localhost:9000/api/v1/test
+```
+
+<img width="743" height="121" alt="Screenshot 2026-04-16 175230" src="https://github.com/user-attachments/assets/6f8a9feb-e294-431b-8661-04037c586b83" />
+
+<img width="730" height="102" alt="Screenshot 2026-04-16 175244" src="https://github.com/user-attachments/assets/516b8dd2-7404-42b9-b146-3d712eff1b3d" />
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
