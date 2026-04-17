@@ -329,7 +329,7 @@ We have our ingress controller running:
 
 <img width="894" height="74" alt="Screenshot 2026-04-17 152931" src="https://github.com/user-attachments/assets/72c049f3-85ba-440a-b895-bd31f1511f98" />
 
-#########
+======================================
 
 Wrote the [ingress.yaml](helm/charts/device-api/templates/ingress.yaml) file 
 
