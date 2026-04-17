@@ -321,6 +321,15 @@ curl http://localhost:9000/api/v1/test
 
 <img width="730" height="102" alt="Screenshot 2026-04-16 175244" src="https://github.com/user-attachments/assets/516b8dd2-7404-42b9-b146-3d712eff1b3d" />
 
+---
+
+## Ingress for External User Access
+
+We have our ingress controller running:
+
+<img width="894" height="74" alt="Screenshot 2026-04-17 152931" src="https://github.com/user-attachments/assets/72c049f3-85ba-440a-b895-bd31f1511f98" />
+
+Wrote the [ingress.yaml](helm/charts/device-api/templates/ingress.yaml) file 
 
 
 
