@@ -384,11 +384,49 @@ curl http://device.local:8080/api/v1/test
 ```
 <img width="1810" height="267" alt="Screenshot 2026-04-17 181118" src="https://github.com/user-attachments/assets/f8c3049f-6ee7-42c9-9e77-7cd3c5269d3d" />
 
+---
+
+## Enabling HTTPS with cert-manager
+
+We will use self-signed certificate, wrote the [issuer.yaml](helm/charts/device-api/templates/issuer.yaml) and upgraded the ingress file with the below config:
+
+```
+metadata:
+  name: device-api
+  annotations:
+    cert-manager.io/issuer: selfsigned-issuer
+spec:
+  ingressClassName: nginx
 
 
+  tls:
+  - hosts:
+      - device.local
+    secretName: device-api-tls
 
+```
+Using this, the cert-manager will generate the certificate and store it in the `device-api-tls` secret.
 
+Time for deploying:
 
+```
+helm upgrade device-api helm/charts/device-api
+```
+
+<img width="998" height="640" alt="Screenshot 2026-04-18 130515" src="https://github.com/user-attachments/assets/6be5cb5a-4467-48f6-a2a0-48b4e60cde1c" />
+
+Doing Port-forward as usual:
+
+```
+kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8080:80 8443:443
+
+# And in another terminal:
+curl -k https://device.local:8443/api/v1/test   # without -k it doesn’t work because self-signed cert is not trusted by system
+```
+
+<img width="1919" height="360" alt="Screenshot 2026-04-18 130856" src="https://github.com/user-attachments/assets/767895f6-a57f-4be8-baf6-eb302efe4883" />
+
+---
 
 
 
