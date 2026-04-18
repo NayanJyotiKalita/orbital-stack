@@ -329,9 +329,62 @@ We have our ingress controller running:
 
 <img width="894" height="74" alt="Screenshot 2026-04-17 152931" src="https://github.com/user-attachments/assets/72c049f3-85ba-440a-b895-bd31f1511f98" />
 
-======================================
-
 Wrote the [ingress.yaml](helm/charts/device-api/templates/ingress.yaml) file 
+
+First we tried doing it the simple way where we don’t mention any hosts in the ingress.yaml file:
+```
+  rules:
+    - http:
+        paths:
+          - path: /api/v1
+            pathType: Prefix
+
+```
+And upgraded the helm chart to configure the ingress into our deployment:
+```
+helm upgrade --install device-api orbital-stack/helm/charts/device-api
+
+curl http://localhost:8080/api/v1/test
+⇒ {"message":"Device API working"}
+```
+
+<img width="1048" height="267" alt="Screenshot 2026-04-18 095959" src="https://github.com/user-attachments/assets/ce3b5272-6edf-4a01-b5b9-27025d43c5c4" />
+
+Then we tried to do something more i.e. we tried adding a fake domain for local testing:
+```
+  rules:
+    - host: device.local
+      http:
+        paths:
+          - path: /api/v1
+
+```
+But we need to add the host name in the `/etc/hosts` file so there is a proper DNS mapping:
+```
+sudo vi /etc/hosts
+
+And Add:
+127.0.0.1  device.local
+```
+```
+helm upgrade device-api helm/charts/device-api
+```
+
+<img width="1073" height="204" alt="Screenshot 2026-04-18 110217" src="https://github.com/user-attachments/assets/e659aa5b-140a-42a5-9f6d-c43d86d89469" />
+
+But we still cannot hit the pod, we need to `port-forward` to the particular service using the correct port mapping:
+
+```
+kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8080:80
+```
+And then in another terminal, we test:
+```
+curl http://device.local:8080/api/v1/test
+⇒ {"message":"Device API working"}
+```
+<img width="1810" height="267" alt="Screenshot 2026-04-17 181118" src="https://github.com/user-attachments/assets/f8c3049f-6ee7-42c9-9e77-7cd3c5269d3d" />
+
+
 
 
 
