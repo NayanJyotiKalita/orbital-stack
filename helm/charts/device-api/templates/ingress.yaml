@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: device-api
+  annotations:
+    cert-manager.io/issuer: selfsigned-issuer
+
+spec:
+  ingressClassName: nginx
+
+  tls:
+    - hosts:
+        - device.local
+      secretName: device-api-tls
+
+  rules:
+    - host: device.local
+      http:
+        paths:
+          - path: /api/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: device-api
+                port:
+                  number: 9000
